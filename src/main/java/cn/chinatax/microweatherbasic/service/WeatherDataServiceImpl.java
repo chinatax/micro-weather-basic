@@ -24,9 +24,9 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class WeatherDataServiceImpl implements WeatherDataService {
 
-    private  final static Logger logger= LoggerFactory.getLogger(WeatherDataServiceImpl.class);
-    private  final String WEATHER_URI = "http://wthrcdn.etouch.cn/weather_mini?";
-    private  final long TIME_OUT = 1800L;
+    private  final static  Logger logger= LoggerFactory.getLogger(WeatherDataServiceImpl.class);
+    private  final static  String WEATHER_URI = "http://wthrcdn.etouch.cn/weather_mini?";
+    private  final static  long TIME_OUT = 1800L;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -49,6 +49,12 @@ public class WeatherDataServiceImpl implements WeatherDataService {
         String url = WEATHER_URI + "city=" + cityName;
 
         return this.doGetWeather(url);
+    }
+
+    @Override
+    public void syncDataByCityId(String cityId) {
+        String uri = WEATHER_URI + "?citykey=" + cityId;
+        this.saveWeatherData(uri);
     }
 
     private WeatherResponse doGetWeather(String url){
@@ -84,6 +90,21 @@ public class WeatherDataServiceImpl implements WeatherDataService {
         }
         return rest;
 
+    }
+    private void saveWeatherData(String uri) {
+        logger.info("现在保存天气信息到redis中");
+        ValueOperations<String, String> ops = this.stringRedisTemplate.opsForValue();
+        String key = uri;
+        String strBody = null;
+
+        ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+
+        if (response.getStatusCodeValue() == 200) {
+            strBody = response.getBody();
+        }
+
+        ops.set(key, strBody, TIME_OUT, TimeUnit.SECONDS);
+        logger.info("完成保存天气信息到redis中");
     }
 
 }

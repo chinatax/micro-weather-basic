@@ -21,6 +21,7 @@ public class RestConfiguration {
 
     @Bean
     public RestTemplate restTemplate(){
+
         return builder.build();
     }
 }

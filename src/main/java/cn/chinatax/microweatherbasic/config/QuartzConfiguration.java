@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 public class QuartzConfiguration {
     //JobDetail
     @Bean
-    public JobDetail weatherDataSyncJobJobDetail(){
+    public JobDetail weatherDataSyncJobDetail(){
         return JobBuilder.newJob(WeatherDataSyncJob.class).withIdentity("weatherDataSyncJob")
                 .storeDurably()
                 .build();
@@ -26,9 +26,9 @@ public class QuartzConfiguration {
     public Trigger weatherDatasyncTrigger(){
 
         SimpleScheduleBuilder schedBuilder = SimpleScheduleBuilder.simpleSchedule()
-                .withIntervalInSeconds(2)
+                .withIntervalInSeconds(1800)  //30分钟执行一次任务
                 .repeatForever();
-        return TriggerBuilder.newTrigger().forJob(weatherDataSyncJobJobDetail())
+        return TriggerBuilder.newTrigger().forJob(weatherDataSyncJobDetail())
                 .withIdentity("weatherDataSyncTrigger").withSchedule(schedBuilder).build();
 
     }

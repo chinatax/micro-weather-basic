@@ -32,5 +32,13 @@ public interface WeatherDataService {
     * @Date: 2019/8/29 
     */ 
     WeatherResponse   getDataByCityName(String cityName);
+    /**
+     * 根据城市ID同步天气数据
+     *
+     * @param cityId
+     * @return
+     */
+    void syncDataByCityId(String cityId);
+
 
 }
